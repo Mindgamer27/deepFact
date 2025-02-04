@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interesting Facts Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .btn {
+            display: block;
+            margin: 0 auto 2rem;
+            padding: 12px 24px;
+            background: #00b894;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #00a383;
+        }
+
+        .btn:disabled {
+            background: #b2bec3;
+            cursor: not-allowed;
+        }
+
+        .facts-container {
+            margin-top: 1rem;
+        }
+
+        .fact-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #00b894;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #636e72;
+            margin: 1rem 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Did You Know? 🤔</h1>
+        <button class="btn" onclick="fetchFact()">Get New Fact</button>
+        <div class="loading" id="loading">Loading...</div>
+        <div class="facts-container" id="factsContainer"></div>
+    </div>
+
+    <script>
+        async function fetchFact() {
+            const btn = document.querySelector('.btn');
+            const loading = document.getElementById('loading');
+            const factsContainer = document.getElementById('factsContainer');
+
+            try {
+                btn.disabled = true;
+                loading.style.display = 'block';
+
+                const response = await fetch('https://api.api-ninjas.com/v1/facts', {
+                    method: 'GET',
+                    headers: {
+                        'X-Api-Key': 'd7Jv3NZad9WH7mZITxkVJQ==aesPJsFKF0NsQIt4'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch fact');
+                }
+
+                const data = await response.json();
+                const fact = data[0].fact;
+
+                const factElement = document.createElement('div');
+                factElement.className = 'fact-card';
+                factElement.innerHTML = `
+                    <p>${fact}</p>
+                `;
+
+                // Add new fact at the top
+                factsContainer.insertBefore(factElement, factsContainer.firstChild);
+
+            } catch (error) {
+                alert('Error fetching fact. Please try again later.');
+                console.error('Error:', error);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // Initial load
+        fetchFact();
+    </script>
+</body>
+</html>
